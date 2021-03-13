@@ -1,6 +1,6 @@
 <?php
 $server = $_SERVER['SERVER_NAME'];
-if(strpos($server,'local') !== false){
+if(strpos($server,'local') !== false || 1){
     defined('YII_DEBUG') or define('YII_DEBUG', true);
     defined('YII_ENV') or define('YII_ENV', 'dev');
 }
