@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -35,6 +36,10 @@ class SiteController extends Controller
                     'logout' => ['post'],
                 ],
             ],
+            'eauth' => [
+                'class' => \nodge\eauth\openid\ControllerBehavior::className(),
+                'only' => ['login']
+            ]
         ];
     }
 
@@ -73,6 +78,38 @@ class SiteController extends Controller
     {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
+        }
+        Yii::$app->getUser()->setReturnUrl(Yii::$app->getUrlManager()->createAbsoluteUrl( '/'));
+        $serviceName = Yii::$app->getRequest()->getQueryParam('service');
+        if (isset($serviceName)) {
+            /** @var $eauth \nodge\eauth\ServiceBase */
+            $eauth = Yii::$app->get('eauth')->getIdentity($serviceName);
+            $eauth->setRedirectUrl(Yii::$app->getUser()->getReturnUrl());
+            $eauth->setCancelUrl(Yii::$app->getUrlManager()->createAbsoluteUrl('site/login'));
+
+            try {
+//                var_dump($eauth->getIsAuthenticated()); exit;
+                if ($eauth->authenticate()) {
+
+                    $identity = User::findByEAuth($eauth);
+                    Yii::$app->getUser()->login($identity);
+
+                    // special redirect with closing popup window
+                    $eauth->redirect(Yii::$app->getUrlManager()->createAbsoluteUrl( '/'));
+                }
+                else {
+                    // close popup window and redirect to cancelUrl
+                    $eauth->cancel();
+                }
+            }
+            catch (\nodge\eauth\ErrorException $e) {
+                // save error to show it later
+                Yii::$app->getSession()->setFlash('error', $e->getMessage());
+
+                // close popup window and redirect to cancelUrl
+                $eauth->redirect($eauth->getCancelUrl());
+                $eauth->cancel();
+            }
         }
 
         $model = new LoginForm();
