@@ -162,4 +162,9 @@ class SiteController extends Controller
     {
         return $this->render('maps');
     }
+
+    public function actionDonations()
+    {
+        return $this->render('donations');
+    }
 }

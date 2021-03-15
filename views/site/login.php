@@ -4,6 +4,7 @@
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model app\models\LoginForm */
 
+use nodge\eauth\Widget;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
@@ -43,5 +44,5 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="alert alert-danger"><?= Yii::$app->getSession()->getFlash('error') ?> </div>
     <?php endif; ?>
 
-    <?php echo \nodge\eauth\Widget::widget(['action' => 'site/login']); ?>
+    <?= Widget::widget(['action' => 'site/login']); ?>
 </div>

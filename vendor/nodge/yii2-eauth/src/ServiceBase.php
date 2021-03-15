@@ -129,6 +129,7 @@ abstract class ServiceBase extends BaseObject implements IAuthService
 	public function init()
 	{
 		parent::init();
+
 		$this->setRedirectUrl(Yii::$app->getUser()->getReturnUrl());
 
 		$service = Yii::$app->getRequest()->getQueryParam('service');
