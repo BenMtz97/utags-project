@@ -37,30 +37,32 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+    $navItems=[
+        ['label' => 'Home', 'url' => ['/site/index']],
+        ['label' => 'Activities',
+            'items' => [
+                ['label' => 'Maps', 'url' => '/site/maps'],
+                ['label' => 'Donations', 'url' => '/site/donations']
+            ]
+        ],
+        ['label' => 'Contact', 'url' => ['/site/contact']],
+    ];
+    if (Yii::$app->user->isGuest) {
+        array_push($navItems, ['label' => 'Login', 'url' => ['/site/login']], ['label' => 'Sign Up', 'url' => ['/site/register']]);
+    }
+    else{
+        array_push($navItems,'<li>'
+            . Html::beginForm(['/site/logout'], 'post')
+            . Html::submitButton(
+                'Logout (' . Yii::$app->user->identity->username . ')',
+                ['class' => 'btn btn-link logout']
+            )
+            . Html::endForm()
+            . '</li>');
+    }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'Activities',
-                'items' => [
-                        ['label' => 'Maps', 'url' => '/site/maps'],
-                        ['label' => 'Donations', 'url' => '/site/donations']
-                ]
-            ],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
+        'items' => $navItems,
     ]);
     NavBar::end();
     ?>

@@ -10,7 +10,7 @@
 namespace nodge\eauth;
 
 use Yii;
-use yii\base\BaseObject;
+use yii\base\Object;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
@@ -19,7 +19,7 @@ use yii\helpers\Url;
  *
  * @package application.extensions.eauth
  */
-class EAuth extends BaseObject
+class EAuth extends Object
 {
 
 	/**

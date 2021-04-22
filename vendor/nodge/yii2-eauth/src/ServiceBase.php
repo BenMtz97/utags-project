@@ -10,7 +10,7 @@
 namespace nodge\eauth;
 
 use Yii;
-use yii\base\BaseObject;
+use yii\base\Object;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use OAuth\Common\Http\Uri\Uri;
@@ -21,7 +21,7 @@ use OAuth\Common\Http\Client\ClientInterface;
  *
  * @package application.extensions.eauth
  */
-abstract class ServiceBase extends BaseObject implements IAuthService
+abstract class ServiceBase extends Object implements IAuthService
 {
 
 	/**
@@ -129,6 +129,7 @@ abstract class ServiceBase extends BaseObject implements IAuthService
 	public function init()
 	{
 		parent::init();
+
 		$this->setRedirectUrl(Yii::$app->getUser()->getReturnUrl());
 
 		$service = Yii::$app->getRequest()->getQueryParam('service');

@@ -148,8 +148,8 @@ class ServiceProxy extends AbstractService
 			throw new TokenResponseException('Unable to parse response.');
 		}
 
-        $error = $this->service->getAccessTokenResponseError($data);
-        if (isset($error)) {
+		$error = $this->service->getAccessTokenResponseError($data);
+		if (isset($error)) {
 			throw new TokenResponseException('Error in retrieving token: "' . $error . '"');
 		}
 
