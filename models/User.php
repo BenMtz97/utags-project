@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\base\Security;
 use yii\db\ActiveRecord;
+use yii\db\Exception;
 use yii\web\IdentityInterface;
 /**
  * This is the model class for table "tbl_user".
@@ -12,6 +13,14 @@ use yii\web\IdentityInterface;
  * @property string $id
  * @property string $username
  * @property string $password
+ * @property string $name
+ * @property string $lastname
+ * @property string $email
+ * @property integer $phone
+ * @property string $birth
+ * @property string $status
+ * @property string $created_at
+ * @property string $updated_at
  * @property string $auth_key
  */
 class User extends ActiveRecord implements IdentityInterface
@@ -30,7 +39,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'password'], 'required'],
+            [['username', 'password', 'name','lastname','email','phone', 'birth'], 'required'],
             [['username', 'password'], 'string', 'max' => 100]
         ];
     }
@@ -43,7 +52,12 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             'id' => 'Id',
             'username' => 'Username',
-            'password' => 'Password'
+            'password' => 'Password',
+            'email'    => 'Email',
+            'phone'    => 'Phone',
+            'birth'    => 'Birthday',
+            'name'     => 'Name',
+            'lastname' => 'Lastname',
         ];
     }
     /** INCLUDE USER LOGIN VALIDATION FUNCTIONS**/
@@ -186,5 +200,26 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = null;
     }
     /** EXTENSION MOVIE **/
+
+    public static function register($data){
+        $data = $data['User'];
+        $user = new User();
+        $user->username = $data['username'];
+        $user->phone = $data['phone'];
+        $user->password = password_hash($data['password'],true);
+        $user->email = $data['email'];
+        $user->name = $data['name'];
+        $user->lastname = $data['lastname'];
+        $user->birth = $data['birth'];
+        $user->status = 1;
+        try{
+            $user->save();
+            return true;
+        }
+        catch (Exception $e){
+            return false;
+        }
+
+    }
 
 }

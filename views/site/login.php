@@ -43,6 +43,4 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php if (Yii::$app->getSession()->hasFlash('error')): ?>
         <div class="alert alert-danger"><?= Yii::$app->getSession()->getFlash('error') ?> </div>
     <?php endif; ?>
-
-    <?= Widget::widget(['action' => 'site/login']); ?>
 </div>

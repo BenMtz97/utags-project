@@ -37,10 +37,6 @@ class SiteController extends Controller
                 'actions' => [
                     'logout' => ['post'],
                 ],
-            ],
-            'eauth' => [
-                'class' => \nodge\eauth\openid\ControllerBehavior::className(),
-                'only' => ['login']
             ]
         ];
     }
@@ -130,9 +126,9 @@ class SiteController extends Controller
             return $this->goHome();
         }
 
-        $model = new RegistrationForm();
-        if ($model->load(Yii::$app->request->post()) && $model->register()) {
-            return $this->goBack();
+        $model = new User();
+        if ($model->load(Yii::$app->request->post()) && $model->register(Yii::$app->request->post())) {
+            return $this->redirect('login');
         }
         return $this->render('register', [
             'model' => $model,
