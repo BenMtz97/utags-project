@@ -10,21 +10,12 @@ class LoginFormCest
     public function openLoginPage(\FunctionalTester $I)
     {
         $I->see('Login', 'h1');
-
     }
 
     // demonstrates `amLoggedInAs` method
     public function internalLoginById(\FunctionalTester $I)
     {
         $I->amLoggedInAs(100);
-        $I->amOnPage('/');
-        $I->see('Logout (admin)');
-    }
-
-    // demonstrates `amLoggedInAs` method
-    public function internalLoginByInstance(\FunctionalTester $I)
-    {
-        $I->amLoggedInAs(\app\models\User::findByUsername('admin'));
         $I->amOnPage('/');
         $I->see('Logout (admin)');
     }
@@ -50,10 +41,21 @@ class LoginFormCest
     public function loginSuccessfully(\FunctionalTester $I)
     {
         $I->submitForm('#login-form', [
-            'LoginForm[username]' => 'admin',
-            'LoginForm[password]' => 'admin',
+            'LoginForm[username]' => 'benmtz97',
+            'LoginForm[password]' => '123456',
         ]);
-        $I->see('Logout (admin)');
+        $I->see('Logout (benmtz97)');
         $I->dontSeeElement('form#login-form');              
+    }
+
+    public function logoutSuccessfully(\FunctionalTester $I)
+    {
+        $I->submitForm('#login-form', [
+            'LoginForm[username]' => 'benmtz97',
+            'LoginForm[password]' => '123456',
+        ]);
+        $I->see('Logout (benmtz97)');
+        $I->submitForm('#logout',[]);
+        $I->dontSee('Log Out (benmtz97)');
     }
 }

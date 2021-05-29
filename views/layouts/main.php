@@ -57,7 +57,7 @@ datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
     }
     else{
         array_push($navItems,'<li>'
-            . Html::beginForm(['/site/logout'], 'post')
+            . Html::beginForm(['/site/logout'], 'post',['id' => 'logout'])
             . Html::submitButton(
                 'Logout (' . Yii::$app->user->identity->username . ')',
                 ['class' => 'btn btn-link logout']
