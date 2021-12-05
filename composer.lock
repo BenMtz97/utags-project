@@ -4,14 +4,14 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3cff4f8685cced7ff8a2728c6a849cb7",
+    "content-hash": "f0acaa84c078574d6a550f98a7a7dfb5",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
             "version": "v3.4.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/twbs/bootstrap.git",
+                "url": "git@github.com:twbs/bootstrap.git",
                 "reference": "68b0d231a13201eb14acd3dc84e51543d16e5f7e"
             },
             "dist": {
@@ -1141,16 +1141,16 @@
         },
         {
             "name": "yiisoft/yii2-authclient",
-            "version": "2.2.9",
+            "version": "2.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-authclient.git",
-                "reference": "f38a0c931c1ae6459a8e221fc693ee31a4c1bab6"
+                "reference": "07c4b35e365beda0cd237dc144fb7268f3bec37c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-authclient/zipball/f38a0c931c1ae6459a8e221fc693ee31a4c1bab6",
-                "reference": "f38a0c931c1ae6459a8e221fc693ee31a4c1bab6",
+                "url": "https://api.github.com/repos/yiisoft/yii2-authclient/zipball/07c4b35e365beda0cd237dc144fb7268f3bec37c",
+                "reference": "07c4b35e365beda0cd237dc144fb7268f3bec37c",
                 "shasum": ""
             },
             "require": {
@@ -1208,7 +1208,7 @@
                 "oauth",
                 "yii2"
             ],
-            "time": "2020-11-13T10:11:46+00:00"
+            "time": "2021-05-05T21:52:22+00:00"
         },
         {
             "name": "yiisoft/yii2-bootstrap",
@@ -4866,6 +4866,9 @@
             "conflict": {
                 "phpstan/phpstan": "<0.12.20",
                 "vimeo/psalm": "<4.6.1 || 4.6.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.5.13"
             },
             "type": "library",
             "extra": {

@@ -20,7 +20,8 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "dektrium/yii2-user": "*",
         "symfony/http-foundation": "^5.2",
-        "predis/predis": "^1.1"
+        "predis/predis": "^1.1",
+        "yiisoft/yii2-authclient": "^2.2"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

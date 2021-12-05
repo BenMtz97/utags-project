@@ -17,6 +17,7 @@ use yii\web\IdentityInterface;
  * @property string $lastname
  * @property string $email
  * @property integer $phone
+ * @property integer $country
  * @property string $birth
  * @property string $status
  * @property string $created_at
@@ -40,7 +41,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [['username', 'password', 'name','lastname','email','phone', 'birth'], 'required'],
-            [['username', 'password'], 'string', 'max' => 100]
+            [['username', 'password'], 'string', 'max' => 100],
+            [['email'], 'email']
         ];
     }
 
@@ -211,6 +213,7 @@ class User extends ActiveRecord implements IdentityInterface
         $user->name = $data['name'];
         $user->lastname = $data['lastname'];
         $user->birth = $data['birth'];
+        $user->country  = $data['country'];
         $user->status = 1;
         try{
             $user->save();
