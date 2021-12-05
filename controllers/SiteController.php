@@ -126,9 +126,6 @@ class SiteController extends Controller
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
-        $cat = new Cat_country();
-        var_dump($cat->insertCountries());
-        exit();
         $model = new User();
         if ($model->load(Yii::$app->request->post()) && $model->register(Yii::$app->request->post())) {
             return $this->redirect('login');
