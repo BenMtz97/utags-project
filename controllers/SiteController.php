@@ -79,37 +79,6 @@ class SiteController extends Controller
             return $this->goHome();
         }
         Yii::$app->getUser()->setReturnUrl(Yii::$app->getUrlManager()->createAbsoluteUrl( '/'));
-        $serviceName = Yii::$app->getRequest()->getQueryParam('service');
-        if (isset($serviceName)) {
-            /** @var $eauth \nodge\eauth\ServiceBase */
-            $eauth = Yii::$app->get('eauth')->getIdentity($serviceName);
-            $eauth->setRedirectUrl(Yii::$app->getUser()->getReturnUrl());
-            $eauth->setCancelUrl(Yii::$app->getUrlManager()->createAbsoluteUrl('site/login'));
-
-            try {
-//                var_dump($eauth->getIsAuthenticated()); exit;
-                if ($eauth->authenticate()) {
-
-                    $identity = User::findByEAuth($eauth);
-                    Yii::$app->getUser()->login($identity);
-
-                    // special redirect with closing popup window
-                    $eauth->redirect(Yii::$app->getUrlManager()->createAbsoluteUrl( '/'));
-                }
-                else {
-                    // close popup window and redirect to cancelUrl
-                    $eauth->cancel();
-                }
-            }
-            catch (\nodge\eauth\ErrorException $e) {
-                // save error to show it later
-                Yii::$app->getSession()->setFlash('error', $e->getMessage());
-
-                // close popup window and redirect to cancelUrl
-                $eauth->redirect($eauth->getCancelUrl());
-                $eauth->cancel();
-            }
-        }
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
@@ -127,12 +96,50 @@ class SiteController extends Controller
             return $this->goHome();
         }
         $model = new User();
-        if ($model->load(Yii::$app->request->post()) && $model->register(Yii::$app->request->post())) {
-            return $this->redirect('login');
+        if ($model->load(Yii::$app->request->post())) {
+            $register = $model->register(Yii::$app->request->post());
+            if($register['result']){
+                try {
+                    Yii::$app->mail->compose('@app/mail/user/activate', ['token' => $register['token']])
+                        ->setFrom('register@utags.com')
+                        ->setTo($register['email'])
+                        ->setSubject('Bienvenido')
+                        ->send();
+                    Yii::$app->getSession()->setFlash('success', 'Tu usuario se registró con éxito. Verifica tu email para continuar.');
+                    return $this->redirect('login');
+                }
+                catch (\Exception $e){
+                    var_dump($e);
+                    exit();
+                }
+            }
+            else{
+                Yii::$app->getSession()->setFlash('error', $register['msg']);
+            }
+        }
+
+        $mCountries = new Cat_country();
+        $countries_result = $mCountries->getCountries();
+        $countries = [];
+        foreach ($countries_result as $country){
+            $countries[$country['idcat_country']] = $country['name'];
         }
         return $this->render('register', [
             'model' => $model,
+            'countries' => $countries
         ]);
+    }
+
+    public function actionVerify($token){
+        $result = User::verify($token);
+        if($result['result']){
+            $type = 'success';
+        }
+        else{
+            $type = 'error';
+        }
+        Yii::$app->getSession()->setFlash($type, $result['msg']);
+        return $this->redirect('login');
     }
 
     /**

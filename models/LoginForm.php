@@ -60,6 +60,20 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
+            $user = $this->getUser();
+            if($user->status == 0){
+                Yii::$app->mail->compose('@app/mail/user/activate', ['token' => $user->token])
+                    ->setFrom('register@utags.com')
+                    ->setTo($user->email)
+                    ->setSubject('Verificar correo')
+                    ->send();
+                Yii::$app->getSession()->setFlash('error', "Your email isn't verified please check your email.");
+                return false;
+            }
+            if($user->status == 2){
+                Yii::$app->getSession()->setFlash('error', "Your account has been disabled, please contact us for more information.");
+                return false;
+            }
             return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
         }
         return false;

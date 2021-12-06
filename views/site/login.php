@@ -40,7 +40,4 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
 
     <?php ActiveForm::end(); ?>
-    <?php if (Yii::$app->getSession()->hasFlash('error')): ?>
-        <div class="alert alert-danger"><?= Yii::$app->getSession()->getFlash('error') ?> </div>
-    <?php endif; ?>
 </div>

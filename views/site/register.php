@@ -3,6 +3,7 @@
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model app\models\LoginForm */
+/* @var $countries Array */
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -40,6 +41,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $form->field($model, 'birth')->textInput(['autofocus' => true, 'class' => 'form-control datepicker']) ?>
 
+    <?=$form->field($model,'country')->dropDownList($countries) ?>
+
     <div class="form-group">
         <div class="col-lg-offset-1 col-lg-11">
             <?= Html::submitButton('Register', ['class' => 'btn btn-primary', 'name' => 'registration-button']) ?>
@@ -47,8 +50,5 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php ActiveForm::end(); ?>
-    <?php if (Yii::$app->getSession()->hasFlash('error')): ?>
-        <div class="alert alert-danger"><?= Yii::$app->getSession()->getFlash('error') ?> </div>
-    <?php endif; ?>
 
 </div>

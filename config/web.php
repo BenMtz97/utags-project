@@ -26,12 +26,16 @@ $config = [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'mailer' => [
+        'mail' => [
             'class' => 'yii\swiftmailer\Mailer',
-            // send all mails to a file by default. You have to set
-            // 'useFileTransport' to false and configure a transport
-            // for the mailer to send real emails.
-            'useFileTransport' => true,
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtp.mailtrap.io',
+                'username' => '5d3ecdfae224b6',
+                'password' => '00a421541afa62',
+                'port' => '2525',
+                'encryption' => 'tls',
+            ]
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -69,13 +73,13 @@ $config = [
 //                'class' => '@app\eauth\DatabaseTokenStorage'
 //            ],
             'services' => [ // You can change the providers and their classes.
-                'google' => [
-                    // register your app here: https://code.google.com/apis/console/
-                    'class' => 'nodge\eauth\services\GoogleOAuth2Service',
-                    'clientId' => '35609626707-ges8c4985ulj0gsijbi840kgftmlhmdb.apps.googleusercontent.com',
-                    'clientSecret' => 'QsMYxXN9hgdvjqp77NRJEoS-',
-                    'title' => 'Google',
-                ],
+//                'google' => [
+//                    // register your app here: https://code.google.com/apis/console/
+//                    'class' => 'nodge\eauth\services\GoogleOAuth2Service',
+//                    'clientId' => '35609626707-ges8c4985ulj0gsijbi840kgftmlhmdb.apps.googleusercontent.com',
+//                    'clientSecret' => 'QsMYxXN9hgdvjqp77NRJEoS-',
+//                    'title' => 'Google',
+//                ],
 //                'twitter' => [
 //                    // register your app here: https://dev.twitter.com/apps/new
 //                    'class' => 'nodge\eauth\services\TwitterOAuth1Service',

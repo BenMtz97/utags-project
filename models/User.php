@@ -22,10 +22,12 @@ use yii\web\IdentityInterface;
  * @property string $status
  * @property string $created_at
  * @property string $updated_at
+ * @property string $token
  * @property string $auth_key
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+
     /**
      * @inheritdoc
      */
@@ -40,9 +42,13 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'password', 'name','lastname','email','phone', 'birth'], 'required'],
-            [['username', 'password'], 'string', 'max' => 100],
-            [['email'], 'email']
+            [['username', 'password', 'name','lastname','email','phone', 'birth','country'], 'required'],
+            [['username', 'password'], 'string', 'max' => 60],
+            ['password','match', 'pattern' => "/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{6,60}$/",
+                'message' => "Password must contain min 6 chars and max 20 chars, at least one uppercase letter, at least one lowercase letter, at least one number and at least one of special character ( !@#$%^&*_=+- )"],
+//            [['email'], 'email'],
+//            ['email','unique','className' => 'User', 'attributeName' => 'email', 'message' => 'The email already in use'],
+//            ['username', 'unique', 'className' => 'User', 'attributeName' => 'username', 'message' => 'The username already in use']
         ];
     }
 
@@ -60,8 +66,10 @@ class User extends ActiveRecord implements IdentityInterface
             'birth'    => 'Birthday',
             'name'     => 'Name',
             'lastname' => 'Lastname',
+            'country'  => 'Country',
         ];
     }
+
     /** INCLUDE USER LOGIN VALIDATION FUNCTIONS**/
     /**
      * @inheritdoc
@@ -80,12 +88,17 @@ class User extends ActiveRecord implements IdentityInterface
         return static::findOne(['access_token' => $token]);
     }
 
-    /* removed
-        public static function findIdentityByAccessToken($token)
-        {
-            throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
-        }
-    */
+    /**
+     * Finds user by token
+     *
+     * @param  string      $token
+     * @return static|null
+     */
+    public static function findByToken($token)
+    {
+        return static::findOne(['token' => $token]);
+    }
+
     /**
      * Finds user by username
      *
@@ -95,7 +108,7 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findByUsername($username)
     {
         $user = static::findOne(['username' => $username]);
-        if(! $user){
+        if(!$user){
             $user = self::findByEmail($username);
         }
         return $user;
@@ -110,27 +123,6 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findByEmail($email)
     {
         return static::findOne(['email' => $email]);
-    }
-
-    /**
-     * Finds user by password reset token
-     *
-     * @param  string      $token password reset token
-     * @return static|null
-     */
-    public static function findByPasswordResetToken($token)
-    {
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
-        $parts = explode('_', $token);
-        $timestamp = (int) end($parts);
-        if ($timestamp + $expire < time()) {
-            // token expired
-            return null;
-        }
-
-        return static::findOne([
-            'password_reset_token' => $token
-        ]);
     }
 
     /**
@@ -168,61 +160,50 @@ class User extends ActiveRecord implements IdentityInterface
         return (password_verify(($password),$this->password));
     }
 
-    /**
-     * Generates password hash from password and sets it to the model
-     *
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
-        $this->password_hash = Security::generatePasswordHash($password);
-    }
-
-    /**
-     * Generates "remember me" authentication key
-     */
-    public function generateAuthKey()
-    {
-        $this->auth_key = Security::generateRandomKey();
-    }
-
-    /**
-     * Generates new password reset token
-     */
-    public function generatePasswordResetToken()
-    {
-        $this->password_reset_token = Security::generateRandomKey() . '_' . time();
-    }
-
-    /**
-     * Removes password reset token
-     */
-    public function removePasswordResetToken()
-    {
-        $this->password_reset_token = null;
-    }
     /** EXTENSION MOVIE **/
 
     public static function register($data){
         $data = $data['User'];
+        if(self::findByEmail($data['email'])){
+            return ['result' => false, 'msg' => 'This email is already in use'];
+        }
+        elseif(self::findByUsername($data['username'])){
+            return ['result' => false, 'msg' => 'This username is already in use'];
+        }
+        $security_instance = new Security();
         $user = new User();
         $user->username = $data['username'];
         $user->phone = $data['phone'];
-        $user->password = password_hash($data['password'],true);
+        $user->password = $security_instance->generatePasswordHash($data['password']);
         $user->email = $data['email'];
         $user->name = $data['name'];
         $user->lastname = $data['lastname'];
         $user->birth = $data['birth'];
         $user->country  = $data['country'];
-        $user->status = 1;
+        $user->status = 0;
+        $user->token = $security_instance->generateRandomString();
         try{
-            $user->save();
-            return true;
+            if($user->save())
+                return ['result' => true, 'token' => $user->token, 'email' => $user->email];
+            return ['result' => false, 'msg' => 'Nel no jala'];
         }
         catch (Exception $e){
-            return false;
+            return ['result' => false, 'msg' => 'Unknown error. Contact support.'];
         }
+    }
 
+    public static function verify($token){
+        $user = User::findByToken($token);
+        if($user != null){
+            $security_instance = new Security();
+            $user->status = 1;
+            $user->token = $security_instance->generateRandomString();
+            $user->save();
+            return ['result' => true, 'msg' => 'Verified account!!'];
+        }
+        else{
+            return ['result' => false, 'msg' => 'Token expired'];
+        }
     }
 
 }
