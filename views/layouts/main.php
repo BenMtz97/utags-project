@@ -47,11 +47,15 @@ datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
         ['label' => 'Activities',
             'items' => [
                 ['label' => 'Maps', 'url' => '/site/maps'],
-                ['label' => 'Donations', 'url' => '/site/donations']
             ]
         ],
         ['label' => 'Contact', 'url' => ['/site/contact']],
     ];
+
+    if(!Yii::$app->user->isGuest && Yii::$app->user->identity->type == 2){
+        $navItems[1]['items'][] = ['label' => 'Gestion de Usuarios', 'url' => '/site/users-admin'];
+    }
+
     if (Yii::$app->user->isGuest) {
         array_push($navItems, ['label' => 'Login', 'url' => ['/site/login']], ['label' => 'Sign Up', 'url' => ['/site/register']]);
     }

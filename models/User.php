@@ -6,26 +6,28 @@ use Yii;
 use yii\base\Security;
 use yii\db\ActiveRecord;
 use yii\db\Exception;
+use yii\db\Query;
 use yii\web\IdentityInterface;
 /**
  * This is the model class for table "tbl_user".
  *
- * @property string $id
- * @property string $username
- * @property string $password
- * @property string $name
- * @property string $lastname
- * @property string $email
- * @property integer $phone
- * @property integer $country
- * @property string $birth
- * @property string $status
- * @property string $created_at
- * @property string $updated_at
- * @property string $token
- * @property string $auth_key
- * @property integer $login_attempts
- * @property string $login_lock_date
+ * @property    string     $id
+ * @property    string     $username
+ * @property    string     $password
+ * @property    string     $name
+ * @property    string     $lastname
+ * @property    string     $email
+ * @property    integer    $phone
+ * @property    integer    $country
+ * @property    string     $birth
+ * @property    string     $status
+ * @property    string     $created_at
+ * @property    string     $updated_at
+ * @property    string     $token
+ * @property    string     $auth_key
+ * @property    integer    $login_attempts
+ * @property    string     $login_lock_date
+ * @property    integer    $type
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -206,6 +208,14 @@ class User extends ActiveRecord implements IdentityInterface
         else{
             return ['result' => false, 'msg' => 'Token expired'];
         }
+    }
+
+    public function getAll(){
+        return (new Query())
+            ->select(['u.*', 'country_name' => 'cc.name'])
+            ->from(['u' => self::tableName()])
+            ->innerJoin(['cc' => 'cat_country'], 'cc.idcat_country = u.country')
+            ->all();
     }
 
 }

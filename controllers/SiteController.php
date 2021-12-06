@@ -10,6 +10,7 @@ use dektrium\user\events\ResetPasswordEvent;
 use dektrium\user\models\RegistrationForm;
 use Yii;
 use yii\base\BaseObject;
+use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -218,8 +219,29 @@ class SiteController extends Controller
         return $this->render('maps');
     }
 
-    public function actionDonations()
+    public function actionUsersAdmin()
     {
-        return $this->render('donations');
+        if(Yii::$app->user->identity->type != 2){
+            Yii::$app->session->addFlash('error', 'You don\'t have access to this resource.');
+            return $this->goHome();
+        }
+        
+        $mUsers = new User();
+        $users = $mUsers->getAll();
+        return $this->render('users-admin', ['users' => $users]);
+    }
+
+    public function actionDeleteUser($id){
+        if(Yii::$app->user->identity->type != 2){
+            Yii::$app->session->addFlash('error', 'You don\'t have access to this resource.');
+            return $this->goHome();
+        }
+        try{
+            User::findOne(['id' => $id])->delete();
+            Yii::$app->session->addFlash('success', 'User deleted successfully');
+        }catch(Exception $e){
+            Yii::$app->session->addFlash('error', 'Unknown error occurred');
+        }
+        return $this->redirect('/site/users-admin');
     }
 }

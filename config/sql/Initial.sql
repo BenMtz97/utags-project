@@ -61,18 +61,22 @@ CREATE TABLE `user` (
   `phone` bigint DEFAULT NULL,
   `country` int DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
-  `password` varchar(255) DEFAULT NULL,
-  `uploaded_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `password` varchar(60) DEFAULT NULL,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `auth_key` varchar(255) DEFAULT NULL,
   `access_token` varchar(255) DEFAULT NULL,
+  `token` varchar(32) DEFAULT NULL,
+  `login_attempts` smallint DEFAULT '0',
+  `login_lock_date` datetime DEFAULT NULL,
+  `type` smallint unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_email_uindex` (`email`),
   UNIQUE KEY `user_id_uindex` (`id`),
   UNIQUE KEY `user_username_uindex` (`username`),
   KEY `country_idx` (`country`),
   CONSTRAINT `country` FOREIGN KEY (`country`) REFERENCES `cat_country` (`idcat_country`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,7 +85,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Benjamin','Martinez','1997-08-16','benmtz97','ben.mtz97@gmail.com',4494927915,NULL,1,'$2y$10$t9QRlXNxpEyvAJZ6Bng10uGYVSgvhCJNrWmJxlnW2WYJTccMymvse','2021-04-22 19:31:51','2021-04-22 19:31:51',NULL,NULL);
+INSERT INTO `user` VALUES (1,'Benjamin','Martinez','2006-11-23','benmtz97','bmartinez97.08@yahoo.com',4494927915,1,1,'$2y$13$vDml2VUlZAI2eaayTKalU.W/vVrO6W2X9TQgSLFo1jB7FkZuk1cfq','2021-12-05 23:43:01','2021-12-05 19:13:39',NULL,NULL,'LW_hwx0fsOvQw7SVYrMSYcPb87_CAx2t',0,NULL,2);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -102,4 +106,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-12-05  0:52:44
+-- Dump completed on 2021-12-06  0:32:40
