@@ -24,6 +24,8 @@ use yii\web\IdentityInterface;
  * @property string $updated_at
  * @property string $token
  * @property string $auth_key
+ * @property integer $login_attempts
+ * @property string $login_lock_date
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -185,7 +187,7 @@ class User extends ActiveRecord implements IdentityInterface
         try{
             if($user->save())
                 return ['result' => true, 'token' => $user->token, 'email' => $user->email];
-            return ['result' => false, 'msg' => 'Nel no jala'];
+            return ['result' => false, 'msg' => 'Unknown error.'];
         }
         catch (Exception $e){
             return ['result' => false, 'msg' => 'Unknown error. Contact support.'];

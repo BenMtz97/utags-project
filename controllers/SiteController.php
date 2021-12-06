@@ -3,7 +3,10 @@
 namespace app\controllers;
 
 use app\models\Cat_country;
+use app\models\ForgotPasswordForm;
+use app\models\RestorePasswordForm;
 use app\models\User;
+use dektrium\user\events\ResetPasswordEvent;
 use dektrium\user\models\RegistrationForm;
 use Yii;
 use yii\base\BaseObject;
@@ -131,6 +134,9 @@ class SiteController extends Controller
     }
 
     public function actionVerify($token){
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
         $result = User::verify($token);
         if($result['result']){
             $type = 'success';
@@ -140,6 +146,36 @@ class SiteController extends Controller
         }
         Yii::$app->getSession()->setFlash($type, $result['msg']);
         return $this->redirect('login');
+    }
+
+    public function actionForgotPassword(){
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+        $model = new ForgotPasswordForm();
+        if ($model->load(Yii::$app->request->post())) {
+            $result = $model->sendEmail(Yii::$app->request->post());
+        }
+        return $this->render('forgot-password',['model' => $model]);
+    }
+
+    public function actionReset($token){
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+        $user = User::findByToken($token);
+        if($user == null){
+            Yii::$app->getSession()->setFlash('error', 'Token has been expired, try again');
+            return $this->redirect('forgot-password');
+        }
+        $model = new RestorePasswordForm();
+        if ($model->load(Yii::$app->request->post())) {
+            $result = $model->restorePassword($token, Yii::$app->request->post());
+            if($result){
+                return $this->redirect('login');
+            }
+        }
+        return $this->render('restore-password', ['model' => $model]);
     }
 
     /**

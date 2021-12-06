@@ -47,8 +47,25 @@ class LoginForm extends Model
         if (!$this->hasErrors()) {
             $user = $this->getUser();
 
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+            if (!$user) {
+                $this->addError($attribute, 'Username not exists.');
+            }
+            else{
+                if($user->login_attempts < 2){
+                    if(!$user->validatePassword($this->password)){
+                        $user->login_attempts = $user->login_attempts+1;
+                        $user->save();
+                        $this->addError($attribute, 'Remaining login attempts before lock: '.(3-$user->login_attempts));
+                    }
+                }
+                elseif($user->login_lock_date == null) {
+                    $user->login_lock_date = date('Y-m-d H:i:s');
+                    $user->save();
+                    $this->addError($attribute, 'Your account has been locked, try it again in 5 min');
+                }
+                elseif($user->login_lock_date > date('Y-m-d H:i:s', strtotime('-5 minutes'))){
+                    $this->addError($attribute, 'Your account has been locked, try it again in 5 min');
+                }
             }
         }
     }
@@ -74,6 +91,11 @@ class LoginForm extends Model
                 Yii::$app->getSession()->setFlash('error', "Your account has been disabled, please contact us for more information.");
                 return false;
             }
+            $user = $this->getUser();
+            $user->login_lock_date = null;
+            $user->login_attempts = 0;
+            $user->save();
+
             return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
         }
         return false;
@@ -89,7 +111,6 @@ class LoginForm extends Model
         if ($this->_user === false) {
             $this->_user = User::findByUsername($this->username);
         }
-
         return $this->_user;
     }
 }
